@@ -12,10 +12,22 @@
   "host_permissions": [
     "*://docs.google.com/forms/*"
   ],
+  "background": {
+    "scripts": ["background.js"]
+  },
   "action": {
-    "default_popup": "popup/popup.html",
     "default_icon": {
-      "48": "icons/icon-48.png"
+      "48": "icons/icon-48.png",
+      "96": "icons/icon-96.png"
+    },
+    "default_title": "Toggle Form Copier Sidebar"
+  },
+  "sidebar_action": {
+    "default_panel": "popup/popup.html",
+    "default_title": "Form Copier",
+    "default_icon": {
+      "48": "icons/icon-48.png",
+      "96": "icons/icon-96.png"
     }
   },
   "icons": {

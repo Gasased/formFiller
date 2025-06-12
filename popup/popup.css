@@ -1,5 +1,7 @@
+/* popup.css */
+
 body {
-    width: 350px;
+    /* width: 350px;  <-- REMOVE or comment out this line */
     padding: 15px;
     font-family: sans-serif;
     font-size: 14px;
@@ -21,11 +23,12 @@ label {
 }
 
 textarea {
-    width: 95%;
+    width: 95%; /* Keep this to have a little padding */
     padding: 5px;
     border-radius: 4px;
     border: 1px solid #ccc;
     font-family: monospace;
+    box-sizing: border-box; /* Add this for better layout */
 }
 
 .button-group {
@@ -41,6 +44,7 @@ button {
     border-radius: 4px;
     cursor: pointer;
     font-weight: bold;
+    box-sizing: border-box; /* Add this for better layout */
 }
 
 button:hover {
@@ -57,14 +61,14 @@ button:hover {
     background-color: #45a049;
 }
 
-#jsonOutput {
+pre#jsonOutput {
     background-color: #f5f5f5;
     border: 1px solid #ddd;
     border-radius: 4px;
     padding: 10px;
     white-space: pre-wrap;
     word-wrap: break-word;
-    max-height: 200px;
+    max-height: 250px; /* Increased max-height for sidebar */
     overflow-y: auto;
     font-size: 12px;
 }
@@ -75,7 +79,8 @@ button:hover {
     height: 15px;
     color: green;
 }
-/* Add these new styles */
+
+/* Tab Styles */
 .tab-nav {
     display: flex;
     border-bottom: 1px solid #ccc;
@@ -113,4 +118,3 @@ button:hover {
 .fill-button:hover {
     background-color: #0056b3;
 }
-/* Keep all your old styles as well */
