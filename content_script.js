@@ -1,11 +1,10 @@
-console.log("Google Form Copier: Content script v4 loaded!");
+console.log("Google Form Copier: Content script v5 loaded!");
 
 /**
  * This is the main function that scrapes the form data.
- * It uses the specific class names identified from the user-provided HTML.
+ * It builds the JSON object with a custom key order.
  */
 function grabFormData() {
-    // This class '.geS5n' correctly identifies the entire question block.
     const questionElements = document.querySelectorAll('.geS5n'); 
     
     if (questionElements.length === 0) {
@@ -16,49 +15,47 @@ function grabFormData() {
     console.log(`Found ${questionElements.length} question blocks.`);
 
     questionElements.forEach((qElement) => {
-        const questionData = {
-            options: [],
-        };
-
-        // --- Get the Question Title ---
-        // This is correct: the title is in a div with role="heading".
+        // --- 1. Gather all the necessary data first ---
+        
         const titleElement = qElement.querySelector('div[role="heading"]');
-        if (!titleElement) return; // Skip non-question elements.
+        if (!titleElement) return;
         
         let questionText = titleElement.textContent.trim();
-        
-        // --- Check if Mandatory ---
-        // This method remains reliable.
+        let isMandatoryValue = false;
+
+        // Check for mandatory asterisk and remove it from the question text
         if (questionText.endsWith('*')) {
-            questionData.isMandatory = true;
-            questionText = questionText.slice(0, -1).trim(); // Clean the asterisk
-        } else {
-            questionData.isMandatory = false;
+            isMandatoryValue = true;
+            questionText = questionText.slice(0, -1).trim();
         }
-        questionData.question = questionText;
-
-        // --- Determine if Multiple Answers are Allowed (Checkboxes) ---
-        // This check is stable as it uses the accessibility role.
-        const isCheckboxType = qElement.querySelector('div[role="checkbox"]') !== null;
-        questionData.hasMultipleAnswers = isCheckboxType;
-
-        // --- Find Option Labels (THE FIX IS HERE) ---
-        // From your HTML, the correct selector for the visible option text is this span class.
-        // It correctly grabs "Варіант 1", "Варіант 2", etc.
-        const optionLabels = qElement.querySelectorAll('.aDTYNe');
         
+        const hasMultipleAnswersValue = qElement.querySelector('div[role="checkbox"]') !== null;
+        
+        const optionsArray = [];
+        const optionLabels = qElement.querySelectorAll('.aDTYNe');
         optionLabels.forEach(label => {
-            // Check to ensure we aren't accidentally grabbing other text.
             if (label.textContent.trim()) {
-                questionData.options.push(label.textContent.trim());
+                optionsArray.push(label.textContent.trim());
             }
         });
+
+        // --- 2. Build the final object in the desired order ---
+
+        const questionData = {
+            "question": questionText,
+            "hasMultipleAnswers": hasMultipleAnswersValue,
+            "options": optionsArray,
+        };
+
+        // --- The "isMandatory" field is now commented out, as requested ---
+        // questionData.isMandatory = isMandatoryValue;
 
         questions.push(questionData);
     });
 
     return { questions };
 }
+
 
 /**
  * Listens for messages from the popup script.
@@ -68,7 +65,7 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
         console.log("Received 'grab_form' request from popup.");
         try {
             const data = grabFormData();
-            console.log("Successfully grabbed data:", data);
+            console.log("Successfully grabbed data with new order:", data);
             sendResponse({ data: data });
         } catch (error) {
             console.error("Error during form grabbing:", error);
