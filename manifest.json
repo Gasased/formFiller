@@ -1,0 +1,35 @@
+{
+  "manifest_version": 3,
+  "name": "Google Form Copier",
+  "version": "1.0",
+  "description": "Reads the content of a Google Form and copies it to the clipboard.",
+
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "clipboardWrite"
+  ],
+
+  "host_permissions": [
+    "*://docs.google.com/forms/*"
+  ],
+
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "48": "icons/icon-48.png"
+    }
+  },
+
+  "icons": {
+    "48": "icons/icon-48.png",
+    "96": "icons/icon-96.png"
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["*://docs.google.com/forms/*"],
+      "js": ["content_script.js"]
+    }
+  ]
+}

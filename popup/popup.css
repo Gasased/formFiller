@@ -1,0 +1,13 @@
+body {
+  width: 200px;
+  padding: 10px;
+  font-family: sans-serif;
+  text-align: center;
+}
+button {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+}
