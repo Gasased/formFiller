@@ -1,57 +1,60 @@
-console.log("Google Form Copier: Content script v2 loaded!");
+console.log("Google Form Copier: Content script v4 loaded!");
 
 /**
  * This is the main function that scrapes the form data.
- * It uses ARIA roles and stable attributes instead of volatile class names.
+ * It uses the specific class names identified from the user-provided HTML.
  */
 function grabFormData() {
-    // Each question is contained within a div with role="listitem"
-    const questionElements = document.querySelectorAll('div[role="listitem"]');
+    // This class '.geS5n' correctly identifies the entire question block.
+    const questionElements = document.querySelectorAll('.geS5n'); 
     
     if (questionElements.length === 0) {
-        throw new Error("No questions found. This might not be a standard Google Form page.");
+        throw new Error("No questions found. The page structure may have changed. Please report this issue.");
     }
 
     const questions = [];
-    console.log(`Found ${questionElements.length} potential question blocks.`);
+    console.log(`Found ${questionElements.length} question blocks.`);
 
-    questionElements.forEach((qElement, index) => {
-        const questionData = {};
+    questionElements.forEach((qElement) => {
+        const questionData = {
+            options: [],
+        };
 
         // --- Get the Question Title ---
-        // The title is in a div with role="heading"
+        // This is correct: the title is in a div with role="heading".
         const titleElement = qElement.querySelector('div[role="heading"]');
-        if (!titleElement) return; // Skip elements that aren't actual questions (like description blocks)
+        if (!titleElement) return; // Skip non-question elements.
         
-        questionData.question = titleElement.textContent.trim();
-
+        let questionText = titleElement.textContent.trim();
+        
         // --- Check if Mandatory ---
-        // The red asterisk has a specific aria-label
-        const mandatoryIndicator = titleElement.querySelector('span[aria-label="Required question"]');
-        questionData.isMandatory = !!mandatoryIndicator;
+        // This method remains reliable.
+        if (questionText.endsWith('*')) {
+            questionData.isMandatory = true;
+            questionText = questionText.slice(0, -1).trim(); // Clean the asterisk
+        } else {
+            questionData.isMandatory = false;
+        }
+        questionData.question = questionText;
 
-        // --- Determine Question Type and Extract Options ---
-        questionData.options = [];
-
-        // Check for Checkboxes (multiple answers)
+        // --- Determine if Multiple Answers are Allowed (Checkboxes) ---
+        // This check is stable as it uses the accessibility role.
         const isCheckboxType = qElement.querySelector('div[role="checkbox"]') !== null;
         questionData.hasMultipleAnswers = isCheckboxType;
 
-        // The options for radio, checkbox, and dropdowns are typically text spans with this class.
-        // We find all of them within the current question element.
-        const optionElements = qElement.querySelectorAll('.M6JNee.itzbvb'); 
+        // --- Find Option Labels (THE FIX IS HERE) ---
+        // From your HTML, the correct selector for the visible option text is this span class.
+        // It correctly grabs "Варіант 1", "Варіант 2", etc.
+        const optionLabels = qElement.querySelectorAll('.aDTYNe');
         
-        optionElements.forEach(opt => {
-            const textSpan = opt.querySelector('.aDT5md');
-            if (textSpan) {
-                questionData.options.push(textSpan.textContent.trim());
+        optionLabels.forEach(label => {
+            // Check to ensure we aren't accidentally grabbing other text.
+            if (label.textContent.trim()) {
+                questionData.options.push(label.textContent.trim());
             }
         });
 
-        // If we successfully found a question title, add it to our list.
-        if (questionData.question) {
-            questions.push(questionData);
-        }
+        questions.push(questionData);
     });
 
     return { questions };
