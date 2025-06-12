@@ -1,12 +1,29 @@
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
     <meta charset="utf-8">
     <link rel="stylesheet" href="popup.css"/>
-  </head>
-  <body>
+</head>
+<body>
     <h3>Form Copier</h3>
-    <button id="copyButton">Copy Form Content</button>
+
+    <div class="control-group">
+        <label for="appendedText">Appended Text (auto-saves)</label>
+        <textarea id="appendedText" rows="4"></textarea>
+    </div>
+
+    <div class="button-group">
+        <button id="grabButton">Grab Form</button>
+        <button id="copyButton">Copy</button>
+    </div>
+
+    <div class="control-group">
+        <label>Form JSON</label>
+        <pre id="jsonOutput">Click 'Grab Form' to see content...</pre>
+    </div>
+
+    <div id="statusMessage"></div>
+
     <script src="popup.js"></script>
-  </body>
+</body>
 </html>
