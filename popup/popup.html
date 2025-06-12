@@ -5,25 +5,39 @@
     <link rel="stylesheet" href="popup.css"/>
 </head>
 <body>
-    <h3>Form Copier</h3>
-
-    <div class="control-group">
-        <label for="appendedText">Appended Text (auto-saves)</label>
-        <textarea id="appendedText" rows="4"></textarea>
+    <div class="tab-nav">
+        <button class="tab-button active" data-tab="grabTab">Grab</button>
+        <button class="tab-button" data-tab="fillTab">Fill</button>
     </div>
 
-    <div class="button-group">
-        <button id="grabButton">Grab Form</button>
-        <button id="copyButton">Copy</button>
+    <!-- Grab Tab Content -->
+    <div id="grabTab" class="tab-content">
+        <h3>Form Grabber</h3>
+        <div class="control-group">
+            <label for="appendedText">Appended Text (auto-saves)</label>
+            <textarea id="appendedText" rows="3"></textarea>
+        </div>
+        <div class="button-group">
+            <button id="grabButton">Grab Form</button>
+            <button id="copyButton">Copy</button>
+        </div>
+        <div class="control-group">
+            <label>Form JSON</label>
+            <pre id="jsonOutput">Click 'Grab Form' to see content...</pre>
+        </div>
     </div>
 
-    <div class="control-group">
-        <label>Form JSON</label>
-        <pre id="jsonOutput">Click 'Grab Form' to see content...</pre>
+    <!-- Fill Tab Content -->
+    <div id="fillTab" class="tab-content hidden">
+        <h3>Form Filler</h3>
+        <div class="control-group">
+            <label for="answersJson">Paste Answer JSON here</label>
+            <textarea id="answersJson" rows="8" placeholder='{ "1": [3], "2": [1, 4] }'></textarea>
+        </div>
+        <button id="fillButton" class="fill-button">Fill Form</button>
     </div>
 
     <div id="statusMessage"></div>
-
     <script src="popup.js"></script>
 </body>
 </html>

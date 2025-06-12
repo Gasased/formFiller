@@ -1,4 +1,4 @@
-console.log("Google Form Copier: Content script v6 loaded!");
+console.log("Google Form Copier: Content script v7 loaded!");
 
 /**
  * This is the main function that scrapes the form data.
@@ -57,22 +57,64 @@ function grabFormData() {
     return { questions };
 }
 
-
 /**
- * Listens for messages from the popup script.
+ * Finds the questions on the page and fills them based on the provided answer data.
+ * @param {object} answers - The answer data, e.g., { "1": [2], "2": [1, 3] }
  */
+function fillFormWithData(answers) {
+    const questionElements = document.querySelectorAll('.geS5n');
+    let filledCount = 0;
+
+    for (const questionId in answers) {
+        const questionIndex = parseInt(questionId, 10) - 1;
+        const answerIndices = answers[questionId]; // Should be an array, e.g., [1] or [2, 4]
+
+        if (questionIndex >= 0 && questionIndex < questionElements.length) {
+            const qElement = questionElements[questionIndex];
+            
+            // Find all clickable options (radio buttons or checkboxes) for this question
+            const clickableOptions = qElement.querySelectorAll('div[role="radio"], div[role="checkbox"]');
+
+            if (Array.isArray(answerIndices)) {
+                answerIndices.forEach(answerIndex => {
+                    const optionToClickIndex = answerIndex - 1;
+                    if (optionToClickIndex >= 0 && optionToClickIndex < clickableOptions.length) {
+                        clickableOptions[optionToClickIndex].click();
+                        filledCount++;
+                    }
+                });
+            }
+        }
+    }
+    return `Successfully filled ${filledCount} options.`;
+}
+
+
+// --- Message Listener ---
 browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    // Handle "grab_form" action
     if (request.action === "grab_form") {
         console.log("Received 'grab_form' request from popup.");
         try {
             const data = grabFormData();
-            console.log("Successfully grabbed data with IDs:", data);
             sendResponse({ data: data });
         } catch (error) {
             console.error("Error during form grabbing:", error);
             sendResponse({ error: error.message });
         }
+        return true;
     }
-    // Return true to indicate you wish to send a response asynchronously
-    return true;
+
+    // Handle new "fill_form" action
+    if (request.action === "fill_form") {
+        console.log("Received 'fill_form' request with data:", request.data);
+        try {
+            const status = fillFormWithData(request.data);
+            sendResponse({ status: status });
+        } catch (error) {
+            console.error("Error during form filling:", error);
+            sendResponse({ status: `Error: ${error.message}` });
+        }
+        return true;
+    }
 });

@@ -75,3 +75,42 @@ button:hover {
     height: 15px;
     color: green;
 }
+/* Add these new styles */
+.tab-nav {
+    display: flex;
+    border-bottom: 1px solid #ccc;
+    margin-bottom: 15px;
+}
+
+.tab-button {
+    padding: 10px 15px;
+    cursor: pointer;
+    border: none;
+    background-color: transparent;
+    border-bottom: 3px solid transparent;
+    font-size: 14px;
+    width: auto;
+    font-weight: normal;
+}
+
+.tab-button.active {
+    font-weight: bold;
+    border-bottom: 3px solid #007bff;
+    color: #007bff;
+}
+
+.tab-content.hidden {
+    display: none;
+}
+
+.fill-button {
+    width: 100%;
+    background-color: #007bff;
+    color: white;
+    border-color: #007bff;
+}
+
+.fill-button:hover {
+    background-color: #0056b3;
+}
+/* Keep all your old styles as well */
